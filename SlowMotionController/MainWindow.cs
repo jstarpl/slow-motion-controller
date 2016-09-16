@@ -787,8 +787,7 @@ namespace SlowMotionController
             }
             foreach (BufferCue cue in cues)
             {
-                sw.WriteLine(String.Format("# {0:0000}, Channel {1:00}\t{2}\t{3}", cue.Id, cue.Channel.Id, cue.FileName, TagsToString(cue.Tags)));
-                sw.WriteLine(String.Format("ch{0} {1:0}-{2:0}", cue.Channel.Id, cue.InFrame, cue.OutFrame));
+                sw.WriteLine(String.Format("ch{0} {1:0}-{2:0} # {3:0000}, Channel {4:00}; {5}; {6}", cue.Channel.Id, cue.InFrame, cue.OutFrame, cue.Id, cue.Channel.Id, cue.FileName, TagsToString(cue.Tags)));
             }
             sw.Close();
         }
