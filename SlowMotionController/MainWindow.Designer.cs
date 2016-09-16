@@ -705,6 +705,7 @@
             this.ClientSize = new System.Drawing.Size(1243, 621);
             this.Controls.Add(this.toolStripContainer1);
             this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.Name = "MainWindow";
             this.Text = "Slow Motion Controller";
