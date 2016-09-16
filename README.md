@@ -1,4 +1,5 @@
-### Slow Motion Controller for CasparCG MAV/EVS Edition
+Slow Motion Controller for CasparCG MAV/EVS Edition
+=====
 
 This is a basic, three-channel slow motion replay controller for CasparCG MAV/EVS Edition.
 
