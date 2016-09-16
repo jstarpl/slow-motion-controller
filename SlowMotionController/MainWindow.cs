@@ -24,6 +24,7 @@ namespace SlowMotionController
 
         private LinkedList<BufferCue> highlightCues;
         private Thread highlightsThread;
+        private Boolean shutdownHiglights = false;
 
         private ulong InPointTemp = 0;
         private ulong OutPointTemp = 0;
@@ -444,29 +445,38 @@ namespace SlowMotionController
 
         private void PlayHighlightsPlaylist()
         {
-            /* if (highlightCues.Count > 0)
+            try
             {
-                BufferCue cue = highlightCues.First.Value;
-                highlightCues.RemoveFirst();
-                (new AmcpRequest(client, "PLAY", server.Channels[2], cue.Channel.Consumer.FileName, "SEEK", (cue.InFrame + cue.Channel.Consumer.Offset).ToString(), "SPEED", currentSpeed.ToString().Replace(',', '.'), "LENGTH", (cue.OutFrame - cue.InFrame).ToString())).GetResponse();
-
-                while (highlightCues.Count > 0)
+                if (highlightCues.Count > 0)
                 {
-                    BufferCue nextCue = highlightCues.First.Value;
+                    BufferCue cue = highlightCues.First.Value;
                     highlightCues.RemoveFirst();
-                    (new AmcpRequest(client, "LOADBG", server.Channels[2], nextCue.Channel.Consumer.FileName, "AUTO", "SEEK", (nextCue.InFrame + nextCue.Channel.Consumer.Offset).ToString(), "SPEED", currentSpeed.ToString().Replace(',', '.'), "LENGTH", (nextCue.OutFrame - nextCue.InFrame).ToString())).GetResponse();
-                    while (server.Channels[2].HasNext)
+                    (new AmcpRequest(client, "PLAY", server.Channels[3], cue.Channel.Consumer.FileName, "SEEK", ((long)cue.InFrame + cue.Channel.Consumer.Offset).ToString(), "SPEED", currentSpeed.ToString().Replace(',', '.'), "LENGTH", (cue.OutFrame - cue.InFrame).ToString())).GetResponse();
+
+                    while (highlightCues.Count > 0)
                     {
-                        Thread.Sleep(1000);
+                        BufferCue nextCue = highlightCues.First.Value;
+                        highlightCues.RemoveFirst();
+                        (new AmcpRequest(client, "LOADBG", server.Channels[3], nextCue.Channel.Consumer.FileName, "AUTO", "SEEK", ((long)nextCue.InFrame + nextCue.Channel.Consumer.Offset).ToString(), "SPEED", currentSpeed.ToString().Replace(',', '.'), "LENGTH", (nextCue.OutFrame - nextCue.InFrame).ToString(), "MIX", "10")).GetResponse();
+                        Console.WriteLine("Scheduling " + nextCue.Channel.Consumer.FileName + " @ " + nextCue.InFrame);
+                        while (server.Channels[3].Producer.virtualPlaybackHead < server.Channels[3].Producer.virtualTotalFrames - (3 * SystemFramerate))
+                        {
+                            Thread.Sleep(1000);
+                        }
                     }
                 }
-            } */
+            }
+            catch (ThreadAbortException tae)
+            {
+                Console.WriteLine("Aborting highlights playback.");
+            }
         }
 
         private void StopHighlightsPlaylist()
         {
             if (highlightsThread != null)
             {
+                shutdownHiglights = true;
                 highlightsThread.Abort();
                 highlightsThread = null;
             }
@@ -760,7 +770,7 @@ namespace SlowMotionController
 
         private void PlayAllSelectedButton_Click(object sender, EventArgs e)
         {
-            // PlaybackName.Text = "HIGHLIGHTS";
+            PlaybackName.Text = "HIGHLIGHTS";
             PlayAllSelected();
         }
 

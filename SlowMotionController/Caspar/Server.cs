@@ -40,6 +40,7 @@ namespace SlowMotionController.Caspar
         {
             this.RecordingHeadPositionUpdated += new OscMessageEvent(Server_RecordingHeadPositionUpdated);
             this.PlayHeadPositionUpdated += new OscMessageEvent(Server_PlayHeadPositionUpdated);
+            this.VirtualPlayHeadPositionUpdated += new OscMessageEvent(Server_VirtualPlayHeadPositionUpdated);
 
             client = Client;
 
@@ -77,7 +78,9 @@ namespace SlowMotionController.Caspar
             oscListener.Attach("/channel/2/output/file/frame", RecordingHeadPositionUpdated);
             oscListener.Attach("/channel/3/output/file/frame", RecordingHeadPositionUpdated);
 
+
             oscListener.Attach("/channel/4/stage/layer/0/file/frame", PlayHeadPositionUpdated);
+            oscListener.Attach("/channel/4/stage/layer/0/file/vframe", VirtualPlayHeadPositionUpdated);
             oscListener.Connect();
 
 
@@ -89,6 +92,18 @@ namespace SlowMotionController.Caspar
             }
         }
 
+        void Server_VirtualPlayHeadPositionUpdated(OscMessage message)
+        {
+            string[] addressParts = message.Address.Split('/');
+            int channelNumber = int.Parse(addressParts[2]);
+            Channel channel = channels[channelNumber - 1]; // CasparCG channelIds are offset by 1
+            if (channel.Producer != null)
+            {
+                channel.Producer.virtualPlaybackHead = (ulong)((long)message[0]);
+                channel.Producer.virtualTotalFrames = (ulong)((long)message[1]);
+            }
+        }
+
         void Server_PlayHeadPositionUpdated(OscMessage message)
         {
             string[] addressParts = message.Address.Split('/');
@@ -97,6 +112,7 @@ namespace SlowMotionController.Caspar
             if (channel.Producer != null)
             {
                 channel.Producer.playbackHead = (ulong)((long)message[0]);
+                channel.Producer.totalFrames = (ulong)((long)message[1]);
             }
         }
 
@@ -112,6 +128,7 @@ namespace SlowMotionController.Caspar
         }
 
         private event OscMessageEvent PlayHeadPositionUpdated;
+        private event OscMessageEvent VirtualPlayHeadPositionUpdated;
         private event OscMessageEvent RecordingHeadPositionUpdated;
 
         public void Disconnect()

@@ -11,6 +11,10 @@ namespace SlowMotionController.Caspar
         internal Channel channel;
 
         internal ulong playbackHead = 0;
+        internal ulong totalFrames = 0;
+
+        internal ulong virtualPlaybackHead = 0;
+        internal ulong virtualTotalFrames = 0;
 
         public ReplayProducer(Channel Channel)
         {
@@ -31,6 +35,21 @@ namespace SlowMotionController.Caspar
         public ulong PlaybackHead
         {
             get { return playbackHead; }
+        }
+
+        public ulong TotalFrames
+        {
+            get { return totalFrames; }
+        }
+
+        public ulong VirtualPlaybackHead
+        {
+            get { return virtualPlaybackHead; }
+        }
+
+        public ulong VirtualTotalFrames
+        {
+            get { return virtualTotalFrames; }
         }
     }
 }
