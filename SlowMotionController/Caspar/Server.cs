@@ -69,19 +69,27 @@ namespace SlowMotionController.Caspar
 
             channels.Add(new Channel(4));
 
+            Thread.Sleep(250);
             (new AmcpRequest(client, "PLAY", channels[3], Channel1FileName)).GetResponse();
 
             channels[3].Producer = new ReplayProducer();
 
-            oscListener = new OscListener(6250);
-            oscListener.Attach("/channel/1/output/file/frame", RecordingHeadPositionUpdated);
-            oscListener.Attach("/channel/2/output/file/frame", RecordingHeadPositionUpdated);
-            oscListener.Attach("/channel/3/output/file/frame", RecordingHeadPositionUpdated);
+            try
+            {
+                oscListener = new OscListener(6250);
+                oscListener.Attach("/channel/1/output/file/frame", RecordingHeadPositionUpdated);
+                oscListener.Attach("/channel/2/output/file/frame", RecordingHeadPositionUpdated);
+                oscListener.Attach("/channel/3/output/file/frame", RecordingHeadPositionUpdated);
 
 
-            oscListener.Attach("/channel/4/stage/layer/0/file/frame", PlayHeadPositionUpdated);
-            oscListener.Attach("/channel/4/stage/layer/0/file/vframe", VirtualPlayHeadPositionUpdated);
-            oscListener.Connect();
+                oscListener.Attach("/channel/4/stage/layer/0/file/frame", PlayHeadPositionUpdated);
+                oscListener.Attach("/channel/4/stage/layer/0/file/vframe", VirtualPlayHeadPositionUpdated);
+                oscListener.Connect();
+            }
+            catch (Exception ioe)
+            {
+                Console.Error.WriteLine(ioe.ToString());
+            }
 
 
             if (ChannelGrid)
@@ -125,6 +133,7 @@ namespace SlowMotionController.Caspar
             {
                 channel.Consumer.recordingHead = (ulong)((long)message[0]);
             }
+            currentFrameInput = Math.Max(currentFrameInput, channel.Consumer.recordingHead);
         }
 
         private event OscMessageEvent PlayHeadPositionUpdated;

@@ -8,6 +8,8 @@ namespace SlowMotionController
 {
     class BufferCue
     {
+        private static uint lastId = 0;
+
         private uint id;
 
         private ulong inFrame;
@@ -27,6 +29,9 @@ namespace SlowMotionController
             this.outFrame = OutFrame;
             this.fileName = FileName;
             this.tags = new LinkedList<string>();
+
+            this.id = BufferCue.lastId + 1;
+            BufferCue.lastId = this.id;
         }
 
         public BufferCue(BufferCue source)
@@ -40,6 +45,9 @@ namespace SlowMotionController
                 this.tags.AddLast(tag);
             }
             this.channel = source.Channel;
+
+            this.id = BufferCue.lastId + 1;
+            BufferCue.lastId = this.id;
         }
 
         public BufferCue(ulong InFrame, ulong OutFrame, Channel Channel)
@@ -66,6 +74,11 @@ namespace SlowMotionController
             set { outFrame = value; }
         }
 
+        public ulong Duration
+        {
+            get { return outFrame - inFrame; }
+        }
+
         public String FileName
         {
             get { return fileName; }
@@ -87,6 +100,11 @@ namespace SlowMotionController
         {
             get { return channel; }
             set { channel = value; fileName = channel.Consumer.FileName; }
+        }
+
+        public uint Camera
+        {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+            get { return channel != null ? channel.Id : 0; }
         }
     }
 }

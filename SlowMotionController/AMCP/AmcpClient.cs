@@ -49,39 +49,39 @@ namespace SlowMotionController.Amcp
 
         public AmcpResponse GetResponse()
         {
-            /* try
-            { */
-            AmcpResponse response;
+            try
+            {
+                AmcpResponse response;
 
-            String firstLine = streamReader.ReadLine();
-            int resultCode = int.Parse(firstLine.Substring(0, 3));
-            String status = firstLine.Substring(4);
-            response = new AmcpResponse(resultCode, status);
-            String content = "";
-            if ((resultCode == 101) || ((resultCode == 201 && (status != "INFO OK"))))
-            {
-                content = streamReader.ReadLine();
-                response.Content = content;
-            }
-            else if ((resultCode == 200) || ((resultCode == 201) && (status == "INFO OK")))
-            {
-                String line = "";
-                do
+                String firstLine = streamReader.ReadLine();
+                int resultCode = int.Parse(firstLine.Substring(0, 3));
+                String status = firstLine.Substring(4);
+                response = new AmcpResponse(resultCode, status);
+                String content = "";
+                if ((resultCode == 101) || ((resultCode == 201 && (status != "INFO OK"))))
                 {
-                    line = streamReader.ReadLine();
-                    if (line != "")
-                        content += line + "\r\n";
+                    content = streamReader.ReadLine();
+                    response.Content = content;
                 }
-                while (line != "");
-                response.Content = content;
-            }
+                else if ((resultCode == 200) || ((resultCode == 201) && (status == "INFO OK")))
+                {
+                    String line = "";
+                    do
+                    {
+                        line = streamReader.ReadLine();
+                        if (line != "")
+                            content += line + "\r\n";
+                    }
+                    while (line != "");
+                    response.Content = content;
+                }
 
-            return response;
-            /* }
+                return response;
+            }
             catch (Exception e)
             {
                 return new AmcpResponse(500, "CONNECTION ERROR");
-            } */
+            }
         }
 
         public void SendRequest(AmcpRequest Request)

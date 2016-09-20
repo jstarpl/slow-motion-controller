@@ -33,7 +33,10 @@
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.StatusStrip = new System.Windows.Forms.StatusStrip();
             this.StatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.SystemStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.ShuttleSpeedLabel = new System.Windows.Forms.Label();
+            this.ShuttleTrackBar = new System.Windows.Forms.TrackBar();
             this.label1 = new System.Windows.Forms.Label();
             this.DefaultReplayDuration = new System.Windows.Forms.NumericUpDown();
             this.PlaybackName = new System.Windows.Forms.Label();
@@ -55,6 +58,12 @@
             this.Minus1Button = new System.Windows.Forms.Button();
             this.Minus2Button = new System.Windows.Forms.Button();
             this.LiveButton = new System.Windows.Forms.Button();
+            this.CueListView = new BrightIdeasSoftware.ObjectListView();
+            this.IdColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.InFrameColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.DurationColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.CommentsColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.CameraColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.Camera3Button = new System.Windows.Forms.RadioButton();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
@@ -64,25 +73,18 @@
             this.label7 = new System.Windows.Forms.Label();
             this.OutPointLabel = new System.Windows.Forms.Label();
             this.InPointLabel = new System.Windows.Forms.Label();
-            this.CueListView = new System.Windows.Forms.ListView();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.CurrentTime = new System.Windows.Forms.Label();
             this.MarkOutButton = new System.Windows.Forms.Button();
             this.MarkInButton = new System.Windows.Forms.Button();
             this.FileToolStrip = new System.Windows.Forms.ToolStrip();
+            this.ImportFromFile = new System.Windows.Forms.ToolStripButton();
             this.SaveToFile = new System.Windows.Forms.ToolStripButton();
             this.ToolStrip = new System.Windows.Forms.ToolStrip();
             this.ServerAddressComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.ConnectButton = new System.Windows.Forms.ToolStripButton();
             this.StatusUpdate = new System.Windows.Forms.Timer(this.components);
             this.SaveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.SystemStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.ShuttleTrackBar = new System.Windows.Forms.TrackBar();
-            this.ShuttleSpeedLabel = new System.Windows.Forms.Label();
+            this.OpenFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.toolStripContainer1.BottomToolStripPanel.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -92,11 +94,12 @@
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ShuttleTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DefaultReplayDuration)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.SpeedBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.CueListView)).BeginInit();
             this.FileToolStrip.SuspendLayout();
             this.ToolStrip.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.ShuttleTrackBar)).BeginInit();
             this.SuspendLayout();
             // 
             // toolStripContainer1
@@ -141,6 +144,11 @@
             this.StatusLabel.Text = "Jan Starzak 2016";
             this.StatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // SystemStatusLabel
+            // 
+            this.SystemStatusLabel.Name = "SystemStatusLabel";
+            this.SystemStatusLabel.Size = new System.Drawing.Size(0, 20);
+            // 
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -176,6 +184,7 @@
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.CueListView);
             this.splitContainer1.Panel2.Controls.Add(this.Camera3Button);
             this.splitContainer1.Panel2.Controls.Add(this.button2);
             this.splitContainer1.Panel2.Controls.Add(this.button1);
@@ -185,13 +194,37 @@
             this.splitContainer1.Panel2.Controls.Add(this.label7);
             this.splitContainer1.Panel2.Controls.Add(this.OutPointLabel);
             this.splitContainer1.Panel2.Controls.Add(this.InPointLabel);
-            this.splitContainer1.Panel2.Controls.Add(this.CueListView);
             this.splitContainer1.Panel2.Controls.Add(this.CurrentTime);
             this.splitContainer1.Panel2.Controls.Add(this.MarkOutButton);
             this.splitContainer1.Panel2.Controls.Add(this.MarkInButton);
             this.splitContainer1.Size = new System.Drawing.Size(1243, 568);
             this.splitContainer1.SplitterDistance = 371;
             this.splitContainer1.TabIndex = 34;
+            // 
+            // ShuttleSpeedLabel
+            // 
+            this.ShuttleSpeedLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.ShuttleSpeedLabel.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.ShuttleSpeedLabel.Location = new System.Drawing.Point(139, 454);
+            this.ShuttleSpeedLabel.Name = "ShuttleSpeedLabel";
+            this.ShuttleSpeedLabel.Size = new System.Drawing.Size(96, 39);
+            this.ShuttleSpeedLabel.TabIndex = 58;
+            this.ShuttleSpeedLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            // 
+            // ShuttleTrackBar
+            // 
+            this.ShuttleTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.ShuttleTrackBar.Location = new System.Drawing.Point(4, 384);
+            this.ShuttleTrackBar.Maximum = 20;
+            this.ShuttleTrackBar.Minimum = -20;
+            this.ShuttleTrackBar.Name = "ShuttleTrackBar";
+            this.ShuttleTrackBar.Size = new System.Drawing.Size(369, 56);
+            this.ShuttleTrackBar.TabIndex = 57;
+            this.ShuttleTrackBar.TickStyle = System.Windows.Forms.TickStyle.Both;
+            this.ShuttleTrackBar.Scroll += new System.EventHandler(this.ShuttleTrackBar_Scroll);
+            this.ShuttleTrackBar.MouseUp += new System.Windows.Forms.MouseEventHandler(this.ShuttleTrackBar_MouseUp);
             // 
             // label1
             // 
@@ -425,6 +458,77 @@
             this.LiveButton.UseVisualStyleBackColor = true;
             this.LiveButton.Click += new System.EventHandler(this.LiveButton_Click);
             // 
+            // CueListView
+            // 
+            this.CueListView.AllColumns.Add(this.IdColumn);
+            this.CueListView.AllColumns.Add(this.InFrameColumn);
+            this.CueListView.AllColumns.Add(this.DurationColumn);
+            this.CueListView.AllColumns.Add(this.CommentsColumn);
+            this.CueListView.AllColumns.Add(this.CameraColumn);
+            this.CueListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.CueListView.CellEditUseWholeCell = false;
+            this.CueListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.IdColumn,
+            this.InFrameColumn,
+            this.DurationColumn,
+            this.CommentsColumn,
+            this.CameraColumn});
+            this.CueListView.Cursor = System.Windows.Forms.Cursors.Default;
+            this.CueListView.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.CueListView.FullRowSelect = true;
+            this.CueListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.CueListView.HeaderUsesThemes = true;
+            this.CueListView.HideSelection = false;
+            this.CueListView.LabelWrap = false;
+            this.CueListView.Location = new System.Drawing.Point(3, 68);
+            this.CueListView.Name = "CueListView";
+            this.CueListView.SelectColumnsOnRightClick = false;
+            this.CueListView.SelectColumnsOnRightClickBehaviour = BrightIdeasSoftware.ObjectListView.ColumnSelectBehaviour.None;
+            this.CueListView.ShowGroups = false;
+            this.CueListView.Size = new System.Drawing.Size(858, 457);
+            this.CueListView.TabIndex = 47;
+            this.CueListView.UseCellFormatEvents = true;
+            this.CueListView.UseCompatibleStateImageBehavior = false;
+            this.CueListView.View = System.Windows.Forms.View.Details;
+            this.CueListView.FormatCell += new System.EventHandler<BrightIdeasSoftware.FormatCellEventArgs>(this.CueListView_FormatCell);
+            // 
+            // IdColumn
+            // 
+            this.IdColumn.AspectName = "Id";
+            this.IdColumn.AspectToStringFormat = "{0:000}";
+            this.IdColumn.Text = "ID";
+            this.IdColumn.Width = 64;
+            // 
+            // InFrameColumn
+            // 
+            this.InFrameColumn.AspectName = "InFrame";
+            this.InFrameColumn.AspectToStringFormat = "";
+            this.InFrameColumn.Text = "In Point";
+            this.InFrameColumn.Width = 129;
+            // 
+            // DurationColumn
+            // 
+            this.DurationColumn.AspectName = "Duration";
+            this.DurationColumn.AspectToStringFormat = "";
+            this.DurationColumn.Text = "Duration";
+            this.DurationColumn.Width = 132;
+            // 
+            // CommentsColumn
+            // 
+            this.CommentsColumn.AspectName = "Tags";
+            this.CommentsColumn.AspectToStringFormat = "";
+            this.CommentsColumn.Text = "Comment";
+            this.CommentsColumn.Width = 310;
+            // 
+            // CameraColumn
+            // 
+            this.CameraColumn.AspectName = "Camera";
+            this.CameraColumn.AspectToStringFormat = "{0}";
+            this.CameraColumn.Text = "Camera";
+            this.CameraColumn.Width = 72;
+            // 
             // Camera3Button
             // 
             this.Camera3Button.Anchor = System.Windows.Forms.AnchorStyles.Top;
@@ -533,52 +637,6 @@
             this.InPointLabel.Text = "00:00:00.00";
             this.InPointLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // CueListView
-            // 
-            this.CueListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.CueListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1,
-            this.columnHeader2,
-            this.columnHeader3,
-            this.columnHeader4,
-            this.columnHeader5});
-            this.CueListView.FullRowSelect = true;
-            this.CueListView.Location = new System.Drawing.Point(3, 68);
-            this.CueListView.Name = "CueListView";
-            this.CueListView.Size = new System.Drawing.Size(858, 457);
-            this.CueListView.TabIndex = 1;
-            this.CueListView.UseCompatibleStateImageBehavior = false;
-            this.CueListView.View = System.Windows.Forms.View.Details;
-            this.CueListView.SelectedIndexChanged += new System.EventHandler(this.CueListView_SelectedIndexChanged);
-            this.CueListView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CueListView_KeyPress);
-            // 
-            // columnHeader1
-            // 
-            this.columnHeader1.Text = "ID";
-            this.columnHeader1.Width = 50;
-            // 
-            // columnHeader2
-            // 
-            this.columnHeader2.Text = "In Point";
-            this.columnHeader2.Width = 120;
-            // 
-            // columnHeader3
-            // 
-            this.columnHeader3.Text = "Duration";
-            this.columnHeader3.Width = 120;
-            // 
-            // columnHeader4
-            // 
-            this.columnHeader4.Text = "Comment";
-            this.columnHeader4.Width = 259;
-            // 
-            // columnHeader5
-            // 
-            this.columnHeader5.Text = "Camera";
-            this.columnHeader5.Width = 100;
-            // 
             // CurrentTime
             // 
             this.CurrentTime.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -617,19 +675,30 @@
             // 
             this.FileToolStrip.Dock = System.Windows.Forms.DockStyle.None;
             this.FileToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ImportFromFile,
             this.SaveToFile});
             this.FileToolStrip.Location = new System.Drawing.Point(3, 0);
             this.FileToolStrip.Name = "FileToolStrip";
-            this.FileToolStrip.Size = new System.Drawing.Size(35, 25);
+            this.FileToolStrip.Size = new System.Drawing.Size(95, 27);
             this.FileToolStrip.TabIndex = 1;
+            // 
+            // ImportFromFile
+            // 
+            this.ImportFromFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.ImportFromFile.Image = ((System.Drawing.Image)(resources.GetObject("ImportFromFile.Image")));
+            this.ImportFromFile.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ImportFromFile.Name = "ImportFromFile";
+            this.ImportFromFile.Size = new System.Drawing.Size(23, 24);
+            this.ImportFromFile.Text = "Import";
+            this.ImportFromFile.ToolTipText = "Import from file...";
+            this.ImportFromFile.Click += new System.EventHandler(this.ImportFromFile_Click);
             // 
             // SaveToFile
             // 
-            this.SaveToFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.SaveToFile.Image = ((System.Drawing.Image)(resources.GetObject("SaveToFile.Image")));
             this.SaveToFile.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.SaveToFile.Name = "SaveToFile";
-            this.SaveToFile.Size = new System.Drawing.Size(23, 22);
+            this.SaveToFile.Size = new System.Drawing.Size(60, 24);
             this.SaveToFile.Text = "Save";
             this.SaveToFile.Click += new System.EventHandler(this.SaveToFile_Click);
             // 
@@ -639,7 +708,7 @@
             this.ToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ServerAddressComboBox,
             this.ConnectButton});
-            this.ToolStrip.Location = new System.Drawing.Point(38, 0);
+            this.ToolStrip.Location = new System.Drawing.Point(98, 0);
             this.ToolStrip.Name = "ToolStrip";
             this.ToolStrip.Size = new System.Drawing.Size(327, 28);
             this.ToolStrip.TabIndex = 0;
@@ -668,35 +737,10 @@
             // 
             this.SaveFileDialog.Filter = "EDL file (*.txt)|*.txt";
             // 
-            // SystemStatusLabel
+            // OpenFileDialog
             // 
-            this.SystemStatusLabel.Name = "SystemStatusLabel";
-            this.SystemStatusLabel.Size = new System.Drawing.Size(0, 20);
-            // 
-            // ShuttleTrackBar
-            // 
-            this.ShuttleTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.ShuttleTrackBar.Location = new System.Drawing.Point(4, 384);
-            this.ShuttleTrackBar.Maximum = 20;
-            this.ShuttleTrackBar.Minimum = -20;
-            this.ShuttleTrackBar.Name = "ShuttleTrackBar";
-            this.ShuttleTrackBar.Size = new System.Drawing.Size(369, 56);
-            this.ShuttleTrackBar.TabIndex = 57;
-            this.ShuttleTrackBar.TickStyle = System.Windows.Forms.TickStyle.Both;
-            this.ShuttleTrackBar.Scroll += new System.EventHandler(this.ShuttleTrackBar_Scroll);
-            this.ShuttleTrackBar.MouseUp += new System.Windows.Forms.MouseEventHandler(this.ShuttleTrackBar_MouseUp);
-            // 
-            // ShuttleSpeedLabel
-            // 
-            this.ShuttleSpeedLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.ShuttleSpeedLabel.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.ShuttleSpeedLabel.Location = new System.Drawing.Point(139, 454);
-            this.ShuttleSpeedLabel.Name = "ShuttleSpeedLabel";
-            this.ShuttleSpeedLabel.Size = new System.Drawing.Size(96, 39);
-            this.ShuttleSpeedLabel.TabIndex = 58;
-            this.ShuttleSpeedLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.OpenFileDialog.Filter = "EDL file (*.txt)|*.txt";
+            this.OpenFileDialog.SupportMultiDottedExtensions = true;
             // 
             // MainWindow
             // 
@@ -729,13 +773,14 @@
             this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.ShuttleTrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.DefaultReplayDuration)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.SpeedBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.CueListView)).EndInit();
             this.FileToolStrip.ResumeLayout(false);
             this.FileToolStrip.PerformLayout();
             this.ToolStrip.ResumeLayout(false);
             this.ToolStrip.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.ShuttleTrackBar)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -773,12 +818,6 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label OutPointLabel;
         private System.Windows.Forms.Label InPointLabel;
-        private System.Windows.Forms.ListView CueListView;
-        private System.Windows.Forms.ColumnHeader columnHeader1;
-        private System.Windows.Forms.ColumnHeader columnHeader2;
-        private System.Windows.Forms.ColumnHeader columnHeader3;
-        private System.Windows.Forms.ColumnHeader columnHeader4;
-        private System.Windows.Forms.ColumnHeader columnHeader5;
         private System.Windows.Forms.Label CurrentTime;
         private System.Windows.Forms.Button MarkOutButton;
         private System.Windows.Forms.Button MarkInButton;
@@ -795,6 +834,14 @@
         private System.Windows.Forms.ToolStripStatusLabel SystemStatusLabel;
         private System.Windows.Forms.TrackBar ShuttleTrackBar;
         private System.Windows.Forms.Label ShuttleSpeedLabel;
+        private BrightIdeasSoftware.ObjectListView CueListView;
+        private BrightIdeasSoftware.OLVColumn IdColumn;
+        private BrightIdeasSoftware.OLVColumn InFrameColumn;
+        private BrightIdeasSoftware.OLVColumn DurationColumn;
+        private BrightIdeasSoftware.OLVColumn CommentsColumn;
+        private BrightIdeasSoftware.OLVColumn CameraColumn;
+        private System.Windows.Forms.ToolStripButton ImportFromFile;
+        private System.Windows.Forms.OpenFileDialog OpenFileDialog;
 
     }
 }

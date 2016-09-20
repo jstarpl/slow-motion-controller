@@ -54,6 +54,8 @@ namespace SlowMotionController
 
         private void ConnectButton_Click(object sender, EventArgs e)
         {
+            this.Cursor = Cursors.WaitCursor; // Connecting can take some time
+
             IPAddress[] addresses = Dns.GetHostAddresses(ServerAddressComboBox.Text);
             IPAddress selectedAdress = null;
 
@@ -87,6 +89,8 @@ namespace SlowMotionController
                     MessageBox.Show(se.Message, "Network error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+
+            this.Cursor = this.DefaultCursor;
         }
 
         private String FormatTime(ulong Frames, ulong FrameRate)
@@ -126,14 +130,15 @@ namespace SlowMotionController
             OutPointLabel.Text = FormatTime(OutPointTemp, SystemFramerate);
 
             BufferCue cue = new BufferCue((InPointTemp > 0 ? InPointTemp : OutPointTemp - NoInPointDiff), OutPointTemp, currentPGMChannel);
-            cues.Add(cue);
 
-            AddCueToList(cue);
+            CueListView.AddObject(cue);
+
+            // AddCueToList(cue);
 
             ClearPointTemp();
         }
 
-        private void AddCueToList(BufferCue cue)
+        /* private void AddCueToList(BufferCue cue)
         {
             ListViewItem item = CueListView.Items.Add(CreateListViewItem(cue));
 
@@ -160,7 +165,7 @@ namespace SlowMotionController
             item.SubItems.Add(cue.Channel.Id.ToString());
 
             return item;
-        }
+        } */
 
         private void ClearPointTemp()
         {
@@ -307,6 +312,12 @@ namespace SlowMotionController
                             break;
                         case Keys.OemPeriod:
                             GoLive();
+                            break;
+                        case Keys.OemSemicolon:
+                            GoBack1();
+                            break;
+                        case Keys.OemQuotes:
+                            GoForward1();
                             break;
                     }
                 }
@@ -498,9 +509,8 @@ namespace SlowMotionController
         {
             if (CueListView.SelectedItems.Count > 0)
             {
-                foreach (ListViewItem item in CueListView.SelectedItems)
+                foreach (BufferCue cue in CueListView.SelectedObjects)
                 {
-                    BufferCue cue = item.Tag as BufferCue;
                     if (cue.Tags.Contains(tag))
                     {
                         cue.Tags.Remove(tag);
@@ -509,13 +519,7 @@ namespace SlowMotionController
                     {
                         cue.Tags.AddLast(tag);
                     }
-
-                    String tags = "";
-                    foreach (String ctag in cue.Tags)
-                    {
-                        tags += (tags != "" ? ", " : "") + ctag;
-                    }
-                    item.SubItems[3].Text = tags;
+                    CueListView.RefreshObject(cue);
                 }
             }
         }
@@ -530,7 +534,14 @@ namespace SlowMotionController
 
         private void GoBack1Frame()
         {
-            (new AmcpRequest(client, "CALL", server.Channels[3], "SEEK", "-1")).GetResponse();
+            if (SystemFramerate > 30) // TODO: There is a bug in the MAV system that causes the system to fail 1 frame backwards seeks. This is a workaround for this bug.
+            {
+                (new AmcpRequest(client, "CALL", server.Channels[3], "SEEK", "-2")).GetResponse();
+            }
+            else
+            {
+                (new AmcpRequest(client, "CALL", server.Channels[3], "SEEK", "-1")).GetResponse();
+            }
         }
 
         private void GoForward1Frame()
@@ -747,8 +758,9 @@ namespace SlowMotionController
                 BufferCue cue = item.Tag as BufferCue;
                 //cues.Remove(cue);
                 BufferCue newCue = new BufferCue(cue);
-                cues.Add(newCue);
-                AddCueToList(newCue);
+                //CueListView.AddObject(newCue);
+                CueListView.AddObject(newCue);
+                // AddCueToList(newCue);
             }
         }
 
@@ -802,6 +814,34 @@ namespace SlowMotionController
             sw.Close();
         }
 
+        private void ImportCues(String FileName)
+        {
+            char[] separators = new char[] { ' ', '\t' };
+            FileStream fs = new FileStream(FileName, FileMode.Open);
+            StreamReader sr = new StreamReader(fs, Encoding.ASCII);
+            Dictionary<string, string> sources = new Dictionary<string, string>();
+            string header = sr.ReadLine();
+            if (header.StartsWith("mplayer EDL")) // valid EDL file
+            {
+                while (!sr.EndOfStream)
+                {
+                    string line = sr.ReadLine();
+                    if (line.StartsWith("<")) // Source video defines
+                    {
+                        string[] elements = line.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+                        sources.Add(elements[1], elements[2]);
+                    }
+                    else // Cue points
+                    {
+                        string[] elements = line.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+                        string[] timecodes = elements[1].Split('-');
+                        BufferCue cue = new BufferCue(UInt64.Parse(timecodes[0]), UInt64.Parse(timecodes[1]), sources[elements[0]]);
+                        CueListView.AddObject(cue);
+                    }
+                }
+            }
+        }
+
         private void SaveToFile_Click(object sender, EventArgs e)
         {
             if (SaveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -813,6 +853,7 @@ namespace SlowMotionController
         private void MainWindow_Load(object sender, EventArgs e)
         {
             SystemStatusLabel.Text = "System framerate: " + this.SystemFramerate + " fps";
+            CueListView.SetObjects(cues);
         }
 
         private void replayDuration_ValueChanged(object sender, EventArgs e)
@@ -937,6 +978,34 @@ namespace SlowMotionController
         private void CueListView_KeyPress(object sender, KeyPressEventArgs e)
         {
             e.Handled = true;
+        }
+
+        private void CueListView_FormatCell(object sender, BrightIdeasSoftware.FormatCellEventArgs e)
+        {
+            if (e.CellValue != null)
+            {
+                if (e.ColumnIndex == 1 || e.ColumnIndex == 2)
+                {
+                    e.SubItem.Text = FormatTime((ulong)e.CellValue, SystemFramerate);
+                }
+                else if (e.ColumnIndex == 3)
+                {
+                    String tags = "";
+                    foreach (String ctag in ((LinkedList<string>)e.CellValue))
+                    {
+                        tags += (tags != "" ? ", " : "") + ctag;
+                    }
+                    e.SubItem.Text = tags;
+                }
+            }
+        }
+
+        private void ImportFromFile_Click(object sender, EventArgs e)
+        {
+            if (OpenFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                ImportCues(OpenFileDialog.FileName);
+            }
         }
 
     }
