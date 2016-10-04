@@ -11,5 +11,20 @@
     <Setting Name="DefaultReplayDuration" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">5</Value>
     </Setting>
+    <Setting Name="IngestDecklinkDevices" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">1,2,3</Value>
+    </Setting>
+    <Setting Name="Tags" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;string&gt;Home,Firebrick&lt;/string&gt;
+  &lt;string&gt;Away,DodgerBlue&lt;/string&gt;
+  &lt;string&gt;Goal,Green&lt;/string&gt;
+  &lt;string&gt;NoGoal,DarkOrange&lt;/string&gt;
+  &lt;string&gt;User1,Teal&lt;/string&gt;
+  &lt;string&gt;User2,DarkBlue&lt;/string&gt;
+  &lt;string&gt;User3,BlueViolet&lt;/string&gt;
+&lt;/ArrayOfString&gt;</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

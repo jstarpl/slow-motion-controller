@@ -36,7 +36,7 @@ namespace SlowMotionController.Caspar
             return DateTime.UtcNow.ToString("yyyyMMddHHmmss");
         }
 
-        public Server(AmcpClient Client, Boolean ChannelGrid = false)
+        public Server(AmcpClient Client, String[] IngestDecklinkDevices, Boolean ChannelGrid = false)
         {
             this.RecordingHeadPositionUpdated += new OscMessageEvent(Server_RecordingHeadPositionUpdated);
             this.PlayHeadPositionUpdated += new OscMessageEvent(Server_PlayHeadPositionUpdated);
@@ -54,9 +54,10 @@ namespace SlowMotionController.Caspar
             string Channel2FileName = CurrentTimeDate() + "-IN2";
             string Channel3FileName = CurrentTimeDate() + "-IN3";
 
-            (new AmcpRequest(client, "PLAY", channels[0], "DECKLINK", "1")).GetResponse();
-            (new AmcpRequest(client, "PLAY", channels[1], "DECKLINK", "2")).GetResponse();
-            (new AmcpRequest(client, "PLAY", channels[2], "DECKLINK", "3")).GetResponse();
+            foreach (string Input in IngestDecklinkDevices)
+            {
+                (new AmcpRequest(client, "PLAY", channels[0], "DECKLINK", Input)).GetResponse();
+            }
 
             (new AmcpRequest(client, "ADD", channels[0], "REPLAY", Channel1FileName)).GetResponse();
             channels[0].Consumer = new ReplayConsumer(Channel1FileName);

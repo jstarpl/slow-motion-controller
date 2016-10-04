@@ -52,5 +52,32 @@ namespace SlowMotionController.Properties {
                 this["DefaultReplayDuration"] = value;
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1,2,3")]
+        public string IngestDecklinkDevices {
+            get {
+                return ((string)(this["IngestDecklinkDevices"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
+<ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+  <string>Home,Firebrick</string>
+  <string>Away,DodgerBlue</string>
+  <string>Goal,Green</string>
+  <string>NoGoal,DarkOrange</string>
+  <string>User1,Teal</string>
+  <string>User2,DarkBlue</string>
+  <string>User3,BlueViolet</string>
+</ArrayOfString>")]
+        public global::System.Collections.Specialized.StringCollection Tags {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["Tags"]));
+            }
+        }
     }
 }

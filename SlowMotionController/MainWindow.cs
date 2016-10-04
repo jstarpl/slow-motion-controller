@@ -37,6 +37,9 @@ namespace SlowMotionController
 
         CueList cues;
 
+        TagRenderer TagItemRenderer;
+        List<string> Tags = new List<string>();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -50,6 +53,20 @@ namespace SlowMotionController
 
             ServerAddressComboBox.Text = SlowMotionController.Properties.Settings.Default.DefaultServer;
             DefaultReplayDuration.Value = SlowMotionController.Properties.Settings.Default.DefaultReplayDuration;
+
+            this.TagItemRenderer = new TagRenderer();
+
+            foreach (string TagAndColor in SlowMotionController.Properties.Settings.Default.Tags)
+            {
+                string[] separate = TagAndColor.Split(',');
+                Tags.Add(separate[0]);
+                if (separate.Length > 1)
+                {
+                    this.TagItemRenderer.TagBrushes.Add(separate[0], new SolidBrush(Color.FromName(separate[1])));
+                }
+            }
+
+            CommentsColumn.Renderer = TagItemRenderer;
         }
 
         private void ConnectButton_Click(object sender, EventArgs e)
@@ -76,7 +93,9 @@ namespace SlowMotionController
                     AmcpResponse response = request.GetResponse();
                     StatusLabel.Text = "Connected to: " + client.ServerEndPoint.ToString() + ", server version: " + response.Content;
 
-                    server = new Server(client, true);
+                    string[] ingestDevices = Properties.Settings.Default.IngestDecklinkDevices.Split(',');
+
+                    server = new Server(client, ingestDevices, true);
 
                     StatusUpdate.Enabled = true;
                     currentPGMChannel = server.Channels[0];
@@ -224,25 +243,25 @@ namespace SlowMotionController
                             SwitchToCamera3();
                             break;
                         case Keys.Z:
-                            Tag("Home");
+                            Tag(Tags[0]);
                             break;
                         case Keys.X:
-                            Tag("Away");
+                            Tag(Tags[1]);
                             break;
                         case Keys.C:
-                            Tag("Goal");
+                            Tag(Tags[2]);
                             break;
                         case Keys.V:
-                            Tag("NoGoal");
+                            Tag(Tags[3]);
                             break;
                         case Keys.B:
-                            Tag("User1");
+                            Tag(Tags[4]);
                             break;
                         case Keys.N:
-                            Tag("User2");
+                            Tag(Tags[5]);
                             break;
                         case Keys.M:
-                            Tag("User3");
+                            Tag(Tags[6]);
                             break;
                         case Keys.Enter:
                             if ((InPointTemp > 0) && (OutPointTemp == 0))
