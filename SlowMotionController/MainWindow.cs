@@ -413,11 +413,11 @@ namespace SlowMotionController
 
         private void ModifyCueCamera(int Camera)
         {
-            if (CueListView.SelectedItems.Count > 0)
+            if (CueListView.SelectedObjects.Count > 0)
             {
-                BufferCue cue = CueListView.SelectedItems[0].Tag as BufferCue;
+                BufferCue cue = CueListView.SelectedObjects[0] as BufferCue;
                 cue.Channel = server.Channels[Camera];
-                CueListView.SelectedItems[0].SubItems[4].Text = cue.Channel.Id.ToString();
+                CueListView.RefreshObject(cue);
             }
         }
 
@@ -425,7 +425,7 @@ namespace SlowMotionController
         {
             if (CueListView.SelectedItems.Count > 0)
             {
-                BufferCue cue = CueListView.SelectedItems[0].Tag as BufferCue;
+                BufferCue cue = CueListView.SelectedObjects[0] as BufferCue;
                 (new AmcpRequest(client, "PLAY", server.Channels[3], cue.Channel.Consumer.FileName, "SEEK", ((long)cue.InFrame + cue.Channel.Consumer.Offset).ToString(), "SPEED", "0", "AUDIO", "1")).GetResponse();
                 SpeedBar.Value = 0;
                 currentPGMChannel = cue.Channel;
@@ -438,7 +438,7 @@ namespace SlowMotionController
         {
             if (CueListView.SelectedItems.Count > 0)
             {
-                BufferCue cue = CueListView.SelectedItems[0].Tag as BufferCue;
+                BufferCue cue = CueListView.SelectedObjects[0] as BufferCue;
                 if (speed == -1)
                 {
                     (new AmcpRequest(client, "PLAY", server.Channels[3], cue.Channel.Consumer.FileName, "SEEK", ((long)cue.InFrame + cue.Channel.Consumer.Offset).ToString(), "SPEED", ((double)SpeedBar.Value / (double)SpeedBar.Maximum).ToString().Replace(',', '.'), "AUDIO", "1")).GetResponse();
@@ -496,10 +496,9 @@ namespace SlowMotionController
         private void PlayAllSelected()
         {
             highlightCues = new LinkedList<BufferCue>();
-            foreach (ListViewItem item in CueListView.SelectedItems)
+            foreach (BufferCue item in CueListView.SelectedObjects)
             {
-                BufferCue cue = item.Tag as BufferCue;
-                highlightCues.AddLast(cue);
+                highlightCues.AddLast(item);
             }
             highlightsThread = new Thread(new ThreadStart(PlayHighlightsPlaylist));
             highlightsThread.Start();
@@ -507,7 +506,7 @@ namespace SlowMotionController
 
         private void Tag(string tag)
         {
-            if (CueListView.SelectedItems.Count > 0)
+            if (CueListView.SelectedObjects.Count > 0)
             {
                 foreach (BufferCue cue in CueListView.SelectedObjects)
                 {
@@ -738,26 +737,22 @@ namespace SlowMotionController
 
         private void DeleteSelected()
         {
-            List<ListViewItem> toDelete = new List<ListViewItem>();
-            foreach (ListViewItem item in CueListView.SelectedItems)
+            List<BufferCue> toDelete = new List<BufferCue>();
+            foreach (BufferCue item in CueListView.SelectedObjects)
             {
                 toDelete.Add(item);
-                BufferCue cue = item.Tag as BufferCue;
-                cues.Remove(cue);
             }
-            foreach (ListViewItem item in toDelete)
+            foreach (BufferCue item in toDelete)
             {
-                CueListView.Items.Remove(item);
+                CueListView.RemoveObject(item);
             }
         }
 
         private void CloneSelected()
         {
-            foreach (ListViewItem item in CueListView.SelectedItems)
+            foreach (BufferCue item in CueListView.SelectedObjects)
             {
-                BufferCue cue = item.Tag as BufferCue;
-                //cues.Remove(cue);
-                BufferCue newCue = new BufferCue(cue);
+                BufferCue newCue = new BufferCue(item);
                 //CueListView.AddObject(newCue);
                 CueListView.AddObject(newCue);
                 // AddCueToList(newCue);
