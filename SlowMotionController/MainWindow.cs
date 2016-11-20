@@ -491,6 +491,7 @@ namespace SlowMotionController
                         Console.WriteLine("Scheduling " + nextCue.Channel.Consumer.FileName + " @ " + nextCue.InFrame);
                         while (server.Channels[3].Producer.virtualPlaybackHead < server.Channels[3].Producer.virtualTotalFrames - (3 * SystemFramerate))
                         {
+                            Console.WriteLine(server.Channels[3].Producer.virtualPlaybackHead.ToString() + ", " + (server.Channels[3].Producer.virtualTotalFrames - (3 * SystemFramerate)).ToString());
                             Thread.Sleep(1000);
                         }
                     }

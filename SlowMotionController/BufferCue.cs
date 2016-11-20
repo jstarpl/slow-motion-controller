@@ -102,9 +102,9 @@ namespace SlowMotionController
             set { channel = value; fileName = channel.Consumer.FileName; }
         }
 
-        public uint Camera
+        public string Camera
         {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
-            get { return channel != null ? channel.Id : 0; }
+            get { return channel != null ? channel.Id.ToString() : this.fileName; }
         }
     }
 }
