@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
@@ -128,7 +129,14 @@ namespace SlowMotionController
         private void StatusUpdate_Tick(object sender, EventArgs e)
         {
             CurrentTime.Text = FormatTime(server.RecordingHead, SystemFramerate);
-            PlaybackTime.Text = FormatTime((ulong)((long)server.Channels[3].Producer.PlaybackHead - currentPGMChannel.Consumer.Offset), SystemFramerate);
+            if (currentPGMChannel != null)
+            {
+                PlaybackTime.Text = FormatTime((ulong)((long)server.Channels[3].Producer.PlaybackHead - currentPGMChannel.Consumer.Offset), SystemFramerate);
+            }
+            else
+            {
+                PlaybackTime.Text = FormatTime((ulong)((long)server.Channels[3].Producer.PlaybackHead), SystemFramerate);
+            }
         }
 
         private void SetInPointTemp()
@@ -148,9 +156,11 @@ namespace SlowMotionController
                 InPointLabel.Text = FormatTime(OutPointTemp - NoInPointDiff, SystemFramerate);
             OutPointLabel.Text = FormatTime(OutPointTemp, SystemFramerate);
 
-            BufferCue cue = new BufferCue((InPointTemp > 0 ? InPointTemp : OutPointTemp - NoInPointDiff), OutPointTemp, currentPGMChannel);
-
-            CueListView.AddObject(cue);
+            if (currentPGMChannel != null)
+            {
+                BufferCue cue = new BufferCue((InPointTemp > 0 ? InPointTemp : OutPointTemp - NoInPointDiff), OutPointTemp, currentPGMChannel);
+                CueListView.AddObject(cue);
+            }
 
             // AddCueToList(cue);
 
@@ -445,11 +455,25 @@ namespace SlowMotionController
             if (CueListView.SelectedItems.Count > 0)
             {
                 BufferCue cue = CueListView.SelectedObjects[0] as BufferCue;
-                (new AmcpRequest(client, "PLAY", server.Channels[3], cue.Channel.Consumer.FileName, "SEEK", ((long)cue.InFrame + cue.Channel.Consumer.Offset).ToString(), "SPEED", "0", "AUDIO", "1")).GetResponse();
+                if (cue.Channel != null)
+                {
+                    (new AmcpRequest(client, "PLAY", server.Channels[3], cue.Channel.Consumer.FileName, "SEEK", ((long)cue.InFrame + cue.Channel.Consumer.Offset).ToString(), "SPEED", "0", "AUDIO", "1")).GetResponse();
+                }
+                else
+                {
+                    (new AmcpRequest(client, "PLAY", server.Channels[3], cue.FileName, "SEEK", ((long)cue.InFrame).ToString(), "SPEED", "0", "AUDIO", "1")).GetResponse();
+                }
                 SpeedBar.Value = 0;
                 currentPGMChannel = cue.Channel;
                 UpdateCameraButtons();
-                PlaybackName.Text = "IN" + cue.Channel.Id.ToString() + " (" + cue.Id.ToString("000") + ")";
+                if (cue.Channel != null)
+                {
+                    PlaybackName.Text = "IN" + cue.Channel.Id.ToString() + " (" + cue.Id.ToString("000") + ")";
+                }
+                else
+                {
+                    PlaybackName.Text = cue.FileName + " (" + cue.Id.ToString("000") + ")";
+                }
             }
         }
 
@@ -460,11 +484,26 @@ namespace SlowMotionController
                 BufferCue cue = CueListView.SelectedObjects[0] as BufferCue;
                 if (speed == -1)
                 {
-                    (new AmcpRequest(client, "PLAY", server.Channels[3], cue.Channel.Consumer.FileName, "SEEK", ((long)cue.InFrame + cue.Channel.Consumer.Offset).ToString(), "SPEED", ((double)SpeedBar.Value / (double)SpeedBar.Maximum).ToString().Replace(',', '.'), "AUDIO", "1")).GetResponse();
+                    if (cue.Channel != null)
+                    {
+                        (new AmcpRequest(client, "PLAY", server.Channels[3], cue.Channel.Consumer.FileName, "SEEK", ((long)cue.InFrame + cue.Channel.Consumer.Offset).ToString(), "SPEED", ((double)SpeedBar.Value / (double)SpeedBar.Maximum).ToString().Replace(',', '.'), "AUDIO", "1")).GetResponse();
+                    }
+                    else
+                    {
+                        (new AmcpRequest(client, "PLAY", server.Channels[3], cue.FileName, "SEEK", ((long)cue.InFrame).ToString(), "SPEED", ((double)SpeedBar.Value / (double)SpeedBar.Maximum).ToString().Replace(',', '.'), "AUDIO", "1")).GetResponse();
+
+                    }
                 }
                 else
                 {
-                    (new AmcpRequest(client, "PLAY", server.Channels[3], cue.Channel.Consumer.FileName, "SEEK", ((long)cue.InFrame + cue.Channel.Consumer.Offset).ToString(), "SPEED", (speed).ToString().Replace(',', '.'), "AUDIO", "1")).GetResponse();
+                    if (cue.Channel != null)
+                    {
+                        (new AmcpRequest(client, "PLAY", server.Channels[3], cue.Channel.Consumer.FileName, "SEEK", ((long)cue.InFrame + cue.Channel.Consumer.Offset).ToString(), "SPEED", (speed).ToString().Replace(',', '.'), "AUDIO", "1")).GetResponse();
+                    }
+                    else
+                    {
+                        (new AmcpRequest(client, "PLAY", server.Channels[3], cue.FileName, "SEEK", ((long)cue.InFrame).ToString(), "SPEED", (speed).ToString().Replace(',', '.'), "AUDIO", "1")).GetResponse();
+                    }
                     SpeedBar.Value = (int)(speed * SpeedBar.Maximum);
                 }
                 currentPGMChannel = cue.Channel;
@@ -481,13 +520,29 @@ namespace SlowMotionController
                 {
                     BufferCue cue = highlightCues.First.Value;
                     highlightCues.RemoveFirst();
-                    (new AmcpRequest(client, "PLAY", server.Channels[3], cue.Channel.Consumer.FileName, "SEEK", ((long)cue.InFrame + cue.Channel.Consumer.Offset).ToString(), "SPEED", currentSpeed.ToString().Replace(',', '.'), "LENGTH", (cue.OutFrame - cue.InFrame).ToString())).GetResponse();
+                    if (cue.Channel != null)
+                    {
+                        (new AmcpRequest(client, "PLAY", server.Channels[3], cue.Channel.Consumer.FileName, "SEEK", ((long)cue.InFrame + cue.Channel.Consumer.Offset).ToString(), "SPEED", currentSpeed.ToString().Replace(',', '.'), "LENGTH", (cue.OutFrame - cue.InFrame).ToString())).GetResponse();
+                    }
+                    else
+                    {
+                        (new AmcpRequest(client, "PLAY", server.Channels[3], cue.FileName, "SEEK", ((long)cue.InFrame).ToString(), "SPEED", currentSpeed.ToString().Replace(',', '.'), "LENGTH", (cue.OutFrame - cue.InFrame).ToString())).GetResponse();
+                    }
+                    
 
                     while (highlightCues.Count > 0)
                     {
                         BufferCue nextCue = highlightCues.First.Value;
                         highlightCues.RemoveFirst();
-                        (new AmcpRequest(client, "LOADBG", server.Channels[3], nextCue.Channel.Consumer.FileName, "AUTO", "SEEK", ((long)nextCue.InFrame + nextCue.Channel.Consumer.Offset).ToString(), "SPEED", currentSpeed.ToString().Replace(',', '.'), "LENGTH", (nextCue.OutFrame - nextCue.InFrame).ToString(), "MIX", "10")).GetResponse();
+                        if (nextCue.Channel != null)
+                        {
+                            (new AmcpRequest(client, "LOADBG", server.Channels[3], nextCue.Channel.Consumer.FileName, "AUTO", "SEEK", ((long)nextCue.InFrame + nextCue.Channel.Consumer.Offset).ToString(), "SPEED", currentSpeed.ToString().Replace(',', '.'), "LENGTH", (nextCue.OutFrame - nextCue.InFrame).ToString(), "MIX", "10")).GetResponse();
+                        }
+                        else
+                        {
+                            (new AmcpRequest(client, "LOADBG", server.Channels[3], nextCue.FileName, "AUTO", "SEEK", ((long)nextCue.InFrame).ToString(), "SPEED", currentSpeed.ToString().Replace(',', '.'), "LENGTH", (nextCue.OutFrame - nextCue.InFrame).ToString(), "MIX", "10")).GetResponse();
+                        }
+                        
                         Console.WriteLine("Scheduling " + nextCue.Channel.Consumer.FileName + " @ " + nextCue.InFrame);
                         while (server.Channels[3].Producer.virtualPlaybackHead < server.Channels[3].Producer.virtualTotalFrames - (3 * SystemFramerate))
                         {
@@ -731,18 +786,28 @@ namespace SlowMotionController
 
         private void UpdateCameraButtons()
         {
-            if (currentPGMChannel.Id == 1)
+            if (currentPGMChannel != null)
             {
-                Camera1Button.Checked = true;
+                if (currentPGMChannel.Id == 1)
+                {
+                    Camera1Button.Checked = true;
+                }
+                else if (currentPGMChannel.Id == 2)
+                {
+                    Camera2Button.Checked = true;
+                }
+                else if (currentPGMChannel.Id == 3)
+                {
+                    Camera3Button.Checked = true;
+                }
             }
-            else if (currentPGMChannel.Id == 2)
+            else
             {
-                Camera2Button.Checked = true;
+                Camera1Button.Checked = false;
+                Camera2Button.Checked = false;
+                Camera3Button.Checked = false;
             }
-            else if (currentPGMChannel.Id == 3)
-            {
-                Camera3Button.Checked = true;
-            }
+            
         }
 
         private void PlaySingleSelectedButton_Click(object sender, EventArgs e)
@@ -822,9 +887,18 @@ namespace SlowMotionController
                     sw.WriteLine("< ch" + ch.Id + " " + ch.Consumer.FileName);
                 }
             }
-            foreach (BufferCue cue in cues)
+
+            foreach (BufferCue cue in CueListView.Objects)
             {
-                sw.WriteLine(String.Format("ch{0} {1:0}-{2:0} # {3:0000}, Channel {4:00}; {5}; {6}", cue.Channel.Id, cue.InFrame, cue.OutFrame, cue.Id, cue.Channel.Id, cue.FileName, TagsToString(cue.Tags)));
+                if (cue.Channel != null)
+                {
+                    sw.WriteLine(String.Format("ch{0} {1:0}-{2:0} # {3:0000}, Channel {4:00}; {5}; {6}", cue.Channel.Id, (long)cue.InFrame + cue.Channel.Consumer.Offset, (long)cue.OutFrame + cue.Channel.Consumer.Offset, cue.Id, cue.Channel.Id, cue.FileName, TagsToString(cue.Tags)));
+                }
+                else
+                {
+                    sw.WriteLine(String.Format("ch{0} {1:0}-{2:0} # {3:0000}, Channel {4:00}; {5}; {6}", cue.Channel.Id, cue.InFrame, cue.OutFrame, cue.Id, cue.Channel.Id, cue.FileName, TagsToString(cue.Tags)));
+                }
+                
             }
             sw.Close();
         }
@@ -836,7 +910,7 @@ namespace SlowMotionController
             StreamReader sr = new StreamReader(fs, Encoding.ASCII);
             Dictionary<string, string> sources = new Dictionary<string, string>();
             string header = sr.ReadLine();
-            if (header.StartsWith("mplayer EDL")) // valid EDL file
+            if (header != null && header.StartsWith("mplayer EDL")) // valid EDL file
             {
                 while (!sr.EndOfStream)
                 {
@@ -851,6 +925,16 @@ namespace SlowMotionController
                         string[] elements = line.Split(separators, StringSplitOptions.RemoveEmptyEntries);
                         string[] timecodes = elements[1].Split('-');
                         BufferCue cue = new BufferCue(UInt64.Parse(timecodes[0]), UInt64.Parse(timecodes[1]), sources[elements[0]]);
+
+                        if (elements.Length > 7)
+                        {
+                            string[] tags = elements[7].Split(',');
+                            foreach (string tag in tags)
+                            {
+                                cue.Tags.AddLast(tag);
+                            }
+                        }
+                        
                         CueListView.AddObject(cue);
                     }
                 }
